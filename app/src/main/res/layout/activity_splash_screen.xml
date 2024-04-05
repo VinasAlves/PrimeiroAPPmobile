@@ -12,6 +12,7 @@
 
     <ImageView
         android:layout_width="408dp"
-        android:layout_height="600dp"
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/logo" />
 </LinearLayout>
