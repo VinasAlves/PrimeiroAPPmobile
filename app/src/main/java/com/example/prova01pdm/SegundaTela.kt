@@ -54,7 +54,7 @@ class SegundaTela : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Por favor, preencha todos os campos", Toast.LENGTH_SHORT).show()
             }
-            et_porcentagem.text.clear()
+            et_chocolate.text.clear()
             et_castanha.text.clear()
             et_porcentagem.text.clear()
         }
