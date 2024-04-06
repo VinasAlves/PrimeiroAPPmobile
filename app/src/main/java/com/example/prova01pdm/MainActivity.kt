@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity()
 
         //FAZER FUNCIONALIDADE DO BOTÃO DE BACKUP
         Backupbutton.setOnClickListener(){
-            crud.backupClientes(this)
+            crud.backup(this)
         }
 
         //FAZER FUNCIONALIDADE DO BOTÃO DELETAR

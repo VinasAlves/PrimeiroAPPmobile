@@ -9,8 +9,10 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
+import java.io.BufferedWriter
 import java.io.File
 import java.io.FileOutputStream
+import java.io.FileWriter
 import java.io.OutputStreamWriter
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -69,41 +71,58 @@ class CRUD(private val context: Context) {
         }
     }
 
-    fun backupClientes(context: Context) {
+    fun backup(context: Context) {
         try {
             val banco = BancoIFTM(context)
             val db = banco.readableDatabase
 
-            val cursor: Cursor = db.rawQuery("SELECT * FROM Cliente", null)
+            // Backup dos clientes
+            val cursorClientes: Cursor = db.rawQuery("SELECT * FROM Cliente", null)
+            val arquivoClientes = File(context.filesDir, "clientes_backup.txt")
+            val writerClientes = BufferedWriter(FileWriter(arquivoClientes))
 
-            val diretorioInterno = context.filesDir
-            val arquivoTxt = File(diretorioInterno, "clientes_backup.txt")
-
-
-            val outputStream = FileOutputStream(arquivoTxt)
-            val writer = OutputStreamWriter(outputStream) 
-
-            while (cursor.moveToNext()) {
-                val cpf = cursor.getString(cursor.getColumnIndexOrThrow("cpf"))
-                val nome = cursor.getString(cursor.getColumnIndexOrThrow("nome"))
-                val telefone = cursor.getString(cursor.getColumnIndexOrThrow("telefone"))
+            while (cursorClientes.moveToNext()) {
+                val cpf = cursorClientes.getString(cursorClientes.getColumnIndexOrThrow("cpf"))
+                val nome = cursorClientes.getString(cursorClientes.getColumnIndexOrThrow("nome"))
+                val telefone = cursorClientes.getString(cursorClientes.getColumnIndexOrThrow("telefone"))
 
                 val cliente = "CPF: $cpf\nNome: $nome\nTelefone: $telefone\n"
-
-                writer.write(cliente)
+                writerClientes.write(cliente)
             }
 
-            writer.close()
-            outputStream.close()
-            cursor.close()
+            writerClientes.close()
+            cursorClientes.close()
 
-            Log.e("BackupClientes", "Caminho do arquivo de backup: ${arquivoTxt.absolutePath}")
-            Toast.makeText(context, "Backup dos clientes realizado com sucesso!", Toast.LENGTH_SHORT).show()
+            // Backup dos pedidos
+            val cursorPedidos: Cursor = db.rawQuery("SELECT * FROM Pedido", null)
+            val arquivoPedidos = File(context.filesDir, "pedidos_backup.txt")
+            val writerPedidos = BufferedWriter(FileWriter(arquivoPedidos))
+
+            while (cursorPedidos.moveToNext()) {
+                val IDChocolate = cursorPedidos.getString(cursorPedidos.getColumnIndexOrThrow("IDChocolate"))
+                val tipoChocolate = cursorPedidos.getString(cursorPedidos.getColumnIndexOrThrow("tipoDeChocolate"))
+                val tipoCastanha = cursorPedidos.getString(cursorPedidos.getColumnIndexOrThrow("tipoDeCastanha"))
+                val porcentagemLeite = cursorPedidos.getString(cursorPedidos.getColumnIndexOrThrow("porcentagemLeite"))
+
+                val pedido = "ID do Pedido: $IDChocolate\nTipo de Chocolate: $tipoChocolate\nTipo de Castanha: $tipoCastanha\nPorcentagem de Leite: $porcentagemLeite\n"
+                writerPedidos.write(pedido)
+            }
+
+            writerPedidos.close()
+            cursorPedidos.close()
+
+            Log.e("BackupDados", "Caminho do arquivo de backup dos clientes: ${arquivoClientes.absolutePath}")
+            Log.e("BackupDados", "Caminho do arquivo de backup dos pedidos: ${arquivoPedidos.absolutePath}")
+
+            Toast.makeText(context, "Backup dos clientes e pedidos realizado com sucesso!", Toast.LENGTH_SHORT).show()
 
         } catch (e: Exception) {
-            Toast.makeText(context, "Erro ao realizar o backup dos clientes: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Erro ao realizar o backup dos clientes e pedidos: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+
+
+
 
     //DELETAR CLIENTES
     fun deletarCliente(cpf: String) {
